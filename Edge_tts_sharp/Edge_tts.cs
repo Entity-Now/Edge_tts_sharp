@@ -16,23 +16,57 @@ namespace Edge_tts_sharp
 {
     public class Edge_tts
     {
-        public static string GetGUID()
+        static string GetGUID()
         {
             return Guid.NewGuid().ToString().Replace("-","");
+        }
+        /// <summary>
+        /// 讲一个浮点型数值转换为百分比数值
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static string FromatPercentage(double input)
+        {
+            string output;
+
+            if (input < 0)
+            {
+                output = input.ToString("+#;-#;0") + "%";
+            }
+            else
+            {
+                output = input.ToString("+#;-#;0") + "%";
+            }
+            return output;
         }
         static string ConvertToAudioFormatWebSocketString(string outputformat)
         {
             return "Content-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n{\"context\":{\"synthesis\":{\"audio\":{\"metadataoptions\":{\"sentenceBoundaryEnabled\":\"false\",\"wordBoundaryEnabled\":\"false\"},\"outputFormat\":\"" + outputformat + "\"}}}}";
         }
-        static string ConvertToSsmlText(string lang, string voice, string text)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lang">输出语言</param>
+        /// <param name="voice">音源名</param>
+        /// <param name="rate">语速，-100% - 100% 之间的值，无需传递百分号</param>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        static string ConvertToSsmlText(string lang, string voice, int rate, string text)
         {
-            return $"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xmlns:mstts='https://www.w3.org/2001/mstts' xml:lang='{lang}'><voice name='{voice}'>{text}</voice></speak>";
+            return $"<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis'  xml:lang='{lang}'><voice name='{voice}'><prosody pitch='+0Hz' rate ='{FromatPercentage(rate)}' volume='+0%'>{text}</prosody></voice></speak>";
         }
-        static string ConvertToSsmlWebSocketString(string requestId, string lang, string voice, string msg)
+        static string ConvertToSsmlWebSocketString(string requestId, string lang, string voice,int rate, string msg)
         {
-            return $"X-RequestId:{requestId}\r\nContent-Type:application/ssml+xml\r\nPath:ssml\r\n\r\n{ConvertToSsmlText(lang, voice, msg)}";
+            return $"X-RequestId:{requestId}\r\nContent-Type:application/ssml+xml\r\nPath:ssml\r\n\r\n{ConvertToSsmlText(lang, voice, rate, msg)}";
         }
-        public static void PlayText(string msg, eVoice voice, string savePath = "")
+        /// <summary>
+        /// 调用微软Edge接口，文字转语音
+        /// </summary>
+        /// <param name="msg">文本内容</param>
+        /// <param name="voice">音频名称</param>
+        /// <param name="rate">（可选）调整语速，是一个-100 - 100的数值</param>
+        /// <param name="savePath">（可选）保存音频到指定路径</param>
+        public static void PlayText(string msg, eVoice voice, int rate = 0, string savePath = "")
         {
             var binary_delim = "Path:audio\r\n";
             var sendRequestId = GetGUID();
@@ -100,10 +134,14 @@ namespace Edge_tts_sharp
             if (wss.Run())
             {
                 wss.Send(ConvertToAudioFormatWebSocketString(voice.SuggestedCodec));
-                wss.Send(ConvertToSsmlWebSocketString(sendRequestId, voice.Locale, voice.Name, msg));
+                wss.Send(ConvertToSsmlWebSocketString(sendRequestId, voice.Locale, voice.Name, rate, msg));
             }
 
         }
+        /// <summary>
+        /// 获取支持的音频列表
+        /// </summary>
+        /// <returns></returns>
         public static List<eVoice> GetVoice()
         {
             var voiceList = Tools.GetEmbedText("Edge_tts_sharp.Source.VoiceList.json");

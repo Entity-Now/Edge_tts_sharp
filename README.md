@@ -15,6 +15,18 @@ Edge_tts.PlayText(msg, voice);
 Console.ReadLine();
 ```
 
+## 设置语速
+```cs
+// 文字转语音，并且设置语速
+Edge_tts.PlayText("你好微软！", "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)", -25);
+```
+
+## 保存到本地
+```cs
+// 文字转语音，并且设置语速
+Edge_tts.PlayText("你好微软！", "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)", -25, "c:\\audio\\xxx.mp3");
+```
+
 ## 获取音频列表
 ```cs
 using Edge_tts_sharp;
