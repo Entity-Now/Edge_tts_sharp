@@ -32,7 +32,7 @@ namespace Edge_tts_sharp
         {
             return $"X-RequestId:{requestId}\r\nContent-Type:application/ssml+xml\r\nPath:ssml\r\n\r\n{ConvertToSsmlText(lang, voice, msg)}";
         }
-        public static void PlayText(string msg, string lang, string voice, string audioOutPutFormat, string savePath = "")
+        public static void PlayText(string msg, eVoice voice, string savePath = "")
         {
             var binary_delim = "Path:audio\r\n";
             var sendRequestId = GetGUID();
@@ -87,6 +87,10 @@ namespace Edge_tts_sharp
                 if (binary.Count > 0)
                 {
                     Audio.PlayToByte(binary.ToArray());
+                    if (!string.IsNullOrWhiteSpace(savePath))
+                    {
+                        File.WriteAllBytes(savePath, binary.ToArray());
+                    }
                 }
             };
             wss.OnLog += (onmsg) =>
@@ -95,8 +99,8 @@ namespace Edge_tts_sharp
             };
             if (wss.Run())
             {
-                wss.Send(ConvertToAudioFormatWebSocketString(audioOutPutFormat));
-                wss.Send(ConvertToSsmlWebSocketString(sendRequestId, lang, voice, msg));
+                wss.Send(ConvertToAudioFormatWebSocketString(voice.SuggestedCodec));
+                wss.Send(ConvertToSsmlWebSocketString(sendRequestId, voice.Locale, voice.Name, msg));
             }
 
         }
