@@ -1,5 +1,10 @@
 # Edge_tts_sharp 
-此类库用于免费使用微软edge浏览器大声朗读
+[Edge_tts_sharp](https://www.nuget.org/packages/Edge_tts_sharp)，是一个免费的C#库，可以调用Edge浏览器的文本转语音功能。
+
+## install
+```sh
+NuGet\Install-Package Edge_tts_sharp -Version 1.0.2
+```
 
 ## 文字转语言
 ```cs
