@@ -3,7 +3,7 @@
 
 ## install
 ```sh
-NuGet\Install-Package Edge_tts_sharp -Version 1.0.2
+NuGet\Install-Package Edge_tts_sharp -Version 1.0.3
 ```
 
 ## 文字转语言
