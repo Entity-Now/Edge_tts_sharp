@@ -60,13 +60,13 @@ namespace Edge_tts_sharp
             return $"X-RequestId:{requestId}\r\nContent-Type:application/ssml+xml\r\nPath:ssml\r\n\r\n{ConvertToSsmlText(lang, voice, rate, msg)}";
         }
         /// <summary>
-        /// 调用微软Edge接口，文字转语音
+        /// 语言转文本，将结果返回到回调函数中
         /// </summary>
-        /// <param name="msg">文本内容</param>
-        /// <param name="voice">音频名称</param>
-        /// <param name="rate">（可选）调整语速，是一个-100 - 100的数值</param>
-        /// <param name="savePath">（可选）保存音频到指定路径</param>
-        public static void PlayText(string msg, eVoice voice, int rate = 0, string savePath = "")
+        /// <param name="msg">需要转换的文本</param>
+        /// <param name="voice">语音包名称</param>
+        /// <param name="rate">播放语速 -100到100的数值</param>
+        /// <param name="callback">第一个参数是binary数据</param>
+        public static void Invoke(string msg, eVoice voice, int rate, Action<List<byte>> callback)
         {
             var binary_delim = "Path:audio\r\n";
             var sendRequestId = GetGUID();
@@ -120,11 +120,11 @@ namespace Edge_tts_sharp
                 //File.WriteAllBytes($"{savePath}temp.mp3", binary.ToArray());
                 if (binary.Count > 0)
                 {
-                    Audio.PlayToByte(binary.ToArray());
-                    if (!string.IsNullOrWhiteSpace(savePath))
-                    {
-                        File.WriteAllBytes(savePath, binary.ToArray());
-                    }
+                    callback(binary);
+                }
+                else
+                {
+                    throw new Exception("返回值为空！");
                 }
             };
             wss.OnLog += (onmsg) =>
@@ -136,7 +136,49 @@ namespace Edge_tts_sharp
                 wss.Send(ConvertToAudioFormatWebSocketString(voice.SuggestedCodec));
                 wss.Send(ConvertToSsmlWebSocketString(sendRequestId, voice.Locale, voice.Name, rate, msg));
             }
-
+        }
+        /// <summary>
+        /// 另存为mp3文件
+        /// </summary>
+        /// <param name="msg">需要转换的文本</param>
+        /// <param name="voice">语音包名称</param>
+        /// <param name="savePath">保存路径</param>
+        /// <param name="rate">播放语速 -100到100的数值</param>
+        public static void SaveAudio(string msg, eVoice voice, int rate = 0, string savePath = "")
+        {
+            Invoke(msg, voice, rate, (_binary) =>
+            {
+                if (!string.IsNullOrWhiteSpace(savePath))
+                {
+                    File.WriteAllBytes(savePath, _binary.ToArray());
+                }
+                else
+                {
+                    throw new Exception("savePath 是空值.");
+                }
+            });
+        }
+        /// <summary>
+        /// 调用微软Edge接口，文字转语音
+        /// </summary>
+        /// <param name="msg">文本内容</param>
+        /// <param name="voice">音频名称</param>
+        /// <param name="rate">（可选）调整语速，是一个-100 - 100的数值</param>
+        /// <param name="savePath">（可选）保存音频到指定路径</param>
+        public static void PlayText(string msg, eVoice voice, int rate = 0, string savePath = "")
+        {
+            Invoke(msg, voice, rate, (_binary) =>
+            {
+                Audio.PlayToByte(_binary.ToArray());
+                if (!string.IsNullOrWhiteSpace(savePath))
+                {
+                    File.WriteAllBytes(savePath, _binary.ToArray());
+                }
+                else
+                {
+                    throw new Exception("savePath 是空值.");
+                }
+            });
         }
         /// <summary>
         /// 获取支持的音频列表

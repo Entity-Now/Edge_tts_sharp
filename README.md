@@ -30,6 +30,18 @@ Edge_tts.PlayText("你好微软！", "Microsoft Server Speech Text to Speech Voi
 ```cs
 // 文字转语音，并且设置语速
 Edge_tts.PlayText("你好微软！", "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)", -25, "c:\\audio\\xxx.mp3");
+// 只保存，不播放
+Edge_tts.SaveAudio("你好微软！", "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)", -25, "c:\\audio\\xxx.mp3");
+```
+
+## 自定义操作
+```cs
+// 回调函数的第一个参数是binary数据
+Edge_tts.Invoke(msg, voice, rate, (_binary) =>
+{
+    //...
+    
+});
 ```
 
 ## 获取音频列表
