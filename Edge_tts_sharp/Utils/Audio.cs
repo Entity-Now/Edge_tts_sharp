@@ -7,7 +7,7 @@ using NAudio;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
 
-namespace Edge_tts_sharp
+namespace Edge_tts_sharp.Utils
 {
     public class Audio
     {
@@ -19,19 +19,20 @@ namespace Edge_tts_sharp
         public static void PlayToByte(byte[] source, float volume = 1.0f)
         {
             using (var ms = new MemoryStream(source))
-                using (var sr = new StreamMediaFoundationReader(ms))
-                    using (var waveOut = new WaveOutEvent())
-                    {
-                        waveOut.Init(sr);
-                        // 0 - 1
-                        waveOut.Volume = volume;
-                        waveOut.Play();
-                        while (waveOut.PlaybackState == PlaybackState.Playing)
-                        {
-                            Thread.Sleep(1000);
-                        }
-                    }
+            using (var sr = new StreamMediaFoundationReader(ms))
+            using (var waveOut = new WaveOutEvent())
+            {
+                waveOut.Init(sr);
+                // 0 - 1
+                waveOut.Volume = volume;
+                waveOut.Play();
+                while (waveOut.PlaybackState == PlaybackState.Playing)
+                {
+                    Thread.Sleep(50);
+                }
+            }
         }
+
         /// <summary>
         /// 播放指定路径的音频
         /// </summary>
@@ -49,7 +50,7 @@ namespace Edge_tts_sharp
 
                 while (outputDevice.PlaybackState == PlaybackState.Playing)
                 {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(50);
                 }
             }
         }

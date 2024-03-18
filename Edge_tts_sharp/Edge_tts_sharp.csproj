@@ -19,6 +19,7 @@
 	  <PackageReadmeFile>README.md</PackageReadmeFile>
 	  <PackageIcon>MenuLogo.png</PackageIcon>
 	  <RepositoryType>git</RepositoryType>
+	  <UserSecretsId>099b9a5e-4ebd-4672-8871-9986815c01f8</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,8 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NAudio" Version="2.2.1" />
-    <PackageReference Include="System.Text.Json" Version="7.0.3" />
+    <PackageReference Include="NAudio" Version="2.0.0" />
+    <PackageReference Include="System.Text.Json" Version="4.6.0" />
     <PackageReference Include="WebSocketSharp" Version="1.0.3-rc11" />
   </ItemGroup>
 

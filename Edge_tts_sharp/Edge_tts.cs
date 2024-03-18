@@ -10,6 +10,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using WebSocketSharp;
+using Edge_tts_sharp.Utils;
+using System.Threading;
 
 
 namespace Edge_tts_sharp
@@ -85,9 +87,17 @@ namespace Edge_tts_sharp
                     }
                     else if (data.Contains("Path:turn.end"))
                     {
+                        // 返回内容
+                        if (binary.Count > 0)
+                        {
+                            callback(binary);
+                        }
+                        else
+                        {
+                            throw new Exception("返回值为空！");
+                        }
                         // end of turn, close stream. 结束信号，可主动关闭socket
-                        // dataBuffers[requestId] = null;
-                        // 不要跟着MsEdgeTTS中用上面那句，音频发送完毕后，最后还会收到一个表示音频结束的文本信息
+                        // 音频发送完毕后，最后还会收到一个表示音频结束的文本信息
                         wss.Close();
                     }
                     else if (data.Contains("Path:response"))
@@ -118,14 +128,7 @@ namespace Edge_tts_sharp
             wss.OnColse += (sender, e) =>
             {
                 //File.WriteAllBytes($"{savePath}temp.mp3", binary.ToArray());
-                if (binary.Count > 0)
-                {
-                    callback(binary);
-                }
-                else
-                {
-                    throw new Exception("返回值为空！");
-                }
+                // ...
             };
             wss.OnLog += (onmsg) =>
             {
@@ -164,21 +167,38 @@ namespace Edge_tts_sharp
         /// <param name="msg">文本内容</param>
         /// <param name="voice">音频名称</param>
         /// <param name="rate">（可选）调整语速，是一个-100 - 100的数值</param>
+        /// <param name="volume">（可选）调整音量，是一个0 - 1的数值</param>
         /// <param name="savePath">（可选）保存音频到指定路径</param>
-        public static void PlayText(string msg, eVoice voice, int rate = 0, string savePath = "")
+        public static void PlayText(string msg, eVoice voice, int rate = 0, float volume = 1.0f, string savePath = "")
         {
             Invoke(msg, voice, rate, (_binary) =>
             {
-                Audio.PlayToByte(_binary.ToArray());
+                Audio.PlayToByte(_binary.ToArray(), volume);
                 if (!string.IsNullOrWhiteSpace(savePath))
                 {
                     File.WriteAllBytes(savePath, _binary.ToArray());
                 }
-                else
-                {
-                    throw new Exception("savePath 是空值.");
-                }
             });
+        }
+        /// <summary>
+        /// 获取一个`AudioPlayer`的对象
+        /// </summary>
+        /// <param name="msg">文本内容</param>
+        /// <param name="voice">音频名称</param>
+        /// <param name="rate">（可选）调整语速，是一个-100 - 100的数值</param>
+        /// <param name="volume">（可选）调整音量，是一个0 - 1的数值</param>
+        public static AudioPlayer GetPlayer(string msg, eVoice voice, int rate = 0, float volume = 1.0f)
+        {
+            AudioPlayer player = null;
+            Invoke(msg, voice, rate, (_binary) =>
+            {
+                player = new AudioPlayer(_binary.ToArray(), volume);
+            });
+            while (player == null) 
+            {
+                Thread.Sleep(10);
+            }
+            return player;
         }
         /// <summary>
         /// 获取支持的音频列表

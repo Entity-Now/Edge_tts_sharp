@@ -3,45 +3,47 @@
 
 ## install
 ```sh
-NuGet\Install-Package Edge_tts_sharp -Version 1.0.3
+NuGet\Install-Package Edge_tts_sharp
 ```
 
 ## 文字转语言
 ```cs
-using Edge_tts_sharp;
-
-string msg = string.Empty;
-Console.WriteLine("请输入文本内容.");
-msg = Console.ReadLine();
-// 1.0
-//Edge_tts.PlayText(msg, "zh-CN", "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)", "webm-24khz-16bit-mono-opus");
-var voice = Edge_tts.GetVoice().FirstOrDefault(i=> i.Name == "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)");
-Edge_tts.PlayText(msg, voice);
-Console.ReadLine();
+// 文本转语音
+static void TextToAudio()
+{
+    var voice = Edge_tts.GetVoice().First();
+    Edge_tts.PlayText("hello Edge~", voice);
+}
 ```
 
-## 设置语速
+## 设置语速和音量
 ```cs
 // 文字转语音，并且设置语速
-Edge_tts.PlayText("你好微软！", "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)", -25);
+Edge_tts.PlayText("你好微软！", "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)", -25, 0.5f);
 ```
 
 ## 保存到本地
 ```cs
-// 文字转语音，并且设置语速
-Edge_tts.PlayText("你好微软！", "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)", -25, "c:\\audio\\xxx.mp3");
-// 只保存，不播放
-Edge_tts.SaveAudio("你好微软！", "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)", -25, "c:\\audio\\xxx.mp3");
+// 保存音频
+static void SaveAudio()
+{
+    // 获取xiaoxiao语音包
+    var voice = Edge_tts.GetVoice().FirstOrDefault(i => i.Name == "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)");
+    Edge_tts.SaveAudio("hello Edge~", voice, 0, "C:\\audio");
+}
 ```
 
 ## 自定义操作
 ```cs
 // 回调函数的第一个参数是binary数据
-Edge_tts.Invoke(msg, voice, rate, (_binary) =>
+static void MyFunc(string msg, eVoice voice)
 {
-    //...
-    
-});
+    Edge_tts.Invoke(msg, voice, 0, libaray =>
+    {
+        // 写入自己的操作
+        // ...
+    } );
+}
 ```
 
 ## 获取音频列表

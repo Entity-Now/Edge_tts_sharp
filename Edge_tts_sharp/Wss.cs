@@ -24,6 +24,8 @@ namespace Edge_tts_sharp
         {
             wssAddress = url;
             wss = new WebSocket(wssAddress);
+            var sslProtocolHack = (System.Security.Authentication.SslProtocols)(SslProtocolsHack.Tls12 | SslProtocolsHack.Tls11 | SslProtocolsHack.Tls);
+            wss.SslConfiguration.EnabledSslProtocols = sslProtocolHack;
             if (url.Contains("wss://"))
             {
                 wss.SslConfiguration.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
@@ -34,7 +36,6 @@ namespace Edge_tts_sharp
             wss.OnMessage += (sender, e)=> OnMessage(sender, e);
             wss.OnClose += (sender, e) =>
             {
-                var sslProtocolHack = (System.Security.Authentication.SslProtocols)(SslProtocolsHack.Tls12 | SslProtocolsHack.Tls11 | SslProtocolsHack.Tls);
                 //TlsHandshakeFailure
                 if (e.Code == 1015 && wss.SslConfiguration.EnabledSslProtocols != sslProtocolHack)
                 {
