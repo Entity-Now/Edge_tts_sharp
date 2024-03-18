@@ -1,10 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-<<<<<<< HEAD
-    <_LastSelectedProfileId>D:\Language\cs\Edge_tts_sharp\Edge_tts_sharp\Properties\PublishProfiles\FolderProfile.pubxml</_LastSelectedProfileId>
-=======
-    <_LastSelectedProfileId>E:\language\cs\Edge_tts_sharp\Edge_tts_sharp\Properties\PublishProfiles\FolderProfile.pubxml</_LastSelectedProfileId>
->>>>>>> d90d7c952b02e74516234963e5498136646a0f75
   </PropertyGroup>
 </Project>
