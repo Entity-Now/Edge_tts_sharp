@@ -5,6 +5,31 @@
 ```sh
 NuGet\Install-Package Edge_tts_sharp
 ```
+## 获取一个Player对象
+> **PlayerAudio**对象，支持对音频进行简单的控制，例如：开始、暂停、继续播放、停止播放等。
+```cs
+// 获取一个PlayerAudio对象
+static void getPlayer(string msg, eVoice voice)
+{
+    var player = Edge_tts.GetPlayer(msg, voice);
+
+    Console.WriteLine("开始播放");
+    player.PlayAsync();
+    Thread.Sleep(3000);
+
+
+    Console.WriteLine("暂停播放");
+    player.Pause();
+    Thread.Sleep(3000);
+
+    Console.WriteLine("继续播放");
+    player.PlayAsync();
+    Thread.Sleep(5000);
+
+    player.Stop();
+    Console.WriteLine("结束播放");
+}
+```
 
 ## 文字转语言
 ```cs
