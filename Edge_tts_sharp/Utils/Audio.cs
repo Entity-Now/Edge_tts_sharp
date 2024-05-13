@@ -16,6 +16,27 @@ namespace Edge_tts_sharp.Utils
         /// </summary>
         /// <param name="source"></param>
         /// <param name="volume">音量大小，0-1的浮点型数值</param>
+        public static void PlayToByte(Stream source, float volume = 1.0f)
+        {
+            using (var sr = new StreamMediaFoundationReader(source))
+            using (var waveOut = new WaveOutEvent())
+            {
+                waveOut.Init(sr);
+                // 0 - 1
+                waveOut.Volume = volume;
+                waveOut.Play();
+                while (waveOut.PlaybackState == PlaybackState.Playing)
+                {
+                    Thread.Sleep(50);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 播放流媒体
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="volume">音量大小，0-1的浮点型数值</param>
         public static void PlayToByte(byte[] source, float volume = 1.0f)
         {
             using (var ms = new MemoryStream(source))

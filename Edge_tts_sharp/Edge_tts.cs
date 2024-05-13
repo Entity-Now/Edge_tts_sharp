@@ -64,11 +64,11 @@ namespace Edge_tts_sharp
         /// <summary>
         /// 语言转文本，将结果返回到回调函数中
         /// </summary>
-        /// <param name="msg">需要转换的文本</param>
+        /// <param name="text">需要转换的文本</param>
         /// <param name="voice">语音包名称</param>
         /// <param name="rate">播放语速 -100到100的数值</param>
         /// <param name="callback">第一个参数是binary数据</param>
-        public static void Invoke(string msg, eVoice voice, int rate, Action<List<byte>> callback)
+        public static void Invoke(string text, eVoice voice, int rate, Action<List<byte>> callback)
         {
             var binary_delim = "Path:audio\r\n";
             var sendRequestId = GetGUID();
@@ -137,19 +137,19 @@ namespace Edge_tts_sharp
             if (wss.Run())
             {
                 wss.Send(ConvertToAudioFormatWebSocketString(voice.SuggestedCodec));
-                wss.Send(ConvertToSsmlWebSocketString(sendRequestId, voice.Locale, voice.Name, rate, msg));
+                wss.Send(ConvertToSsmlWebSocketString(sendRequestId, voice.Locale, voice.Name, rate, text));
             }
         }
         /// <summary>
         /// 另存为mp3文件
         /// </summary>
-        /// <param name="msg">需要转换的文本</param>
+        /// <param name="text">需要转换的文本</param>
         /// <param name="voice">语音包名称</param>
         /// <param name="savePath">保存路径</param>
         /// <param name="rate">播放语速 -100到100的数值</param>
-        public static void SaveAudio(string msg, eVoice voice, int rate = 0, string savePath = "")
+        public static void SaveAudio(string text, eVoice voice, int rate = 0, string savePath = "")
         {
-            Invoke(msg, voice, rate, (_binary) =>
+            Invoke(text, voice, rate, (_binary) =>
             {
                 if (!string.IsNullOrWhiteSpace(savePath))
                 {
@@ -169,9 +169,9 @@ namespace Edge_tts_sharp
         /// <param name="rate">（可选）调整语速，是一个-100 - 100的数值</param>
         /// <param name="volume">（可选）调整音量，是一个0 - 1的数值</param>
         /// <param name="savePath">（可选）保存音频到指定路径</param>
-        public static void PlayText(string msg, eVoice voice, int rate = 0, float volume = 1.0f, string savePath = "")
+        public static void PlayText(string text, eVoice voice, int rate = 0, float volume = 1.0f, string savePath = "")
         {
-            Invoke(msg, voice, rate, (_binary) =>
+            Invoke(text, voice, rate, (_binary) =>
             {
                 Audio.PlayToByte(_binary.ToArray(), volume);
                 if (!string.IsNullOrWhiteSpace(savePath))
@@ -183,14 +183,14 @@ namespace Edge_tts_sharp
         /// <summary>
         /// 获取一个`AudioPlayer`的对象
         /// </summary>
-        /// <param name="msg">文本内容</param>
+        /// <param name="text">文本内容</param>
         /// <param name="voice">音频名称</param>
         /// <param name="rate">（可选）调整语速，是一个-100 - 100的数值</param>
         /// <param name="volume">（可选）调整音量，是一个0 - 1的数值</param>
-        public static AudioPlayer GetPlayer(string msg, eVoice voice, int rate = 0, float volume = 1.0f)
+        public static AudioPlayer GetPlayer(string text, eVoice voice, int rate = 0, float volume = 1.0f)
         {
             AudioPlayer player = null;
-            Invoke(msg, voice, rate, (_binary) =>
+            Invoke(text, voice, rate, (_binary) =>
             {
                 player = new AudioPlayer(_binary.ToArray(), volume);
             });

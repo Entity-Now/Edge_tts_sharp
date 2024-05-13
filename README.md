@@ -8,7 +8,7 @@ NuGet\Install-Package Edge_tts_sharp
 
 ## 文字转语言
 ```cs
-// 文本转语音
+# 文本转语音
 static void TextToAudio()
 {
     var voice = Edge_tts.GetVoice().First();
@@ -17,9 +17,16 @@ static void TextToAudio()
 ```
 
 ## 设置语速和音量
+| 属性 | 说明 |
+| --- | --- |
+| msg | 文本 |
+| voice | voice对象 | 
+| rate | （可选）调整语速，是一个-100 - 100的数值 |
+| volume | （可选）调整音量，是一个0 - 1的数值 |
 ```cs
-// 文字转语音，并且设置语速
-Edge_tts.PlayText("你好微软！", "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)", -25, 0.5f);
+# 文字转语音，并且设置语速
+var voice = Edge_tts.GetVoice().First();
+Edge_tts.PlayText("hello Edge~", voice， -25， 0.5f);
 ```
 
 ## 保存到本地
