@@ -5,6 +5,31 @@
 ```sh
 NuGet\Install-Package Edge_tts_sharp
 ```
+## 获取一个Player对象
+> **PlayerAudio**对象，支持对音频进行简单的控制，例如：开始、暂停、继续播放、停止播放等。
+```cs
+// 获取一个PlayerAudio对象
+static void getPlayer(string msg, eVoice voice)
+{
+    var player = Edge_tts.GetPlayer(msg, voice);
+
+    Console.WriteLine("开始播放");
+    player.PlayAsync();
+    Thread.Sleep(3000);
+
+
+    Console.WriteLine("暂停播放");
+    player.Pause();
+    Thread.Sleep(3000);
+
+    Console.WriteLine("继续播放");
+    player.PlayAsync();
+    Thread.Sleep(5000);
+
+    player.Stop();
+    Console.WriteLine("结束播放");
+}
+```
 
 ## 文字转语言
 ```cs
@@ -62,6 +87,25 @@ foreach(var item in voices){
     Console.WriteLine($"voice name is{item.Name}, locale（语言） is {item.Locale}, SuggestedCodec(音频类型) is {item.SuggestedCodec}");
 }
 ```
+## 汉语语音包有：
+
+| ShortName              | Locale       | 地区         |
+|------------------------|--------------|--------------|
+| zh-HK-HiuGaaiNeural    | zh-HK        | 香港         |
+| zh-HK-HiuMaanNeural    | zh-HK        | 香港         |
+| zh-HK-WanLungNeural    | zh-HK        | 香港         |
+| zh-CN-XiaoxiaoNeural   | zh-CN        | 中国（大陆） |
+| zh-CN-XiaoyiNeural     | zh-CN        | 中国（大陆） |
+| zh-CN-YunjianNeural    | zh-CN        | 中国（大陆） |
+| zh-CN-YunxiNeural      | zh-CN        | 中国（大陆） |
+| zh-CN-YunxiaNeural     | zh-CN        | 中国（大陆） |
+| zh-CN-YunyangNeural    | zh-CN        | 中国（大陆） |
+| zh-CN-liaoning-XiaobeiNeural | zh-CN-liaoning | 中国（辽宁） |
+| zh-TW-HsiaoChenNeural  | zh-TW        | 台湾         |
+| zh-TW-YunJheNeural     | zh-TW        | 台湾         |
+| zh-TW-HsiaoYuNeural    | zh-TW        | 台湾         |
+| zh-CN-shaanxi-XiaoniNeural | zh-CN-shaanxi | 中国（陕西） |
+
 
 ## 更新内容
 
