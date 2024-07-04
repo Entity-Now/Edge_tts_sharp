@@ -173,7 +173,7 @@ namespace Edge_tts_sharp
         {
             Invoke(text, voice, rate, (_binary) =>
             {
-                Audio.PlayToByte(_binary.ToArray(), volume);
+                Audio.PlayToByteAsync(_binary.ToArray(), volume);
                 if (!string.IsNullOrWhiteSpace(savePath))
                 {
                     File.WriteAllBytes(savePath, _binary.ToArray());
