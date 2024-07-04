@@ -31,7 +31,7 @@ namespace Edge_tts_sharp.Utils
 
                 while (waveOut.PlaybackState == PlaybackState.Playing)
                 {
-                    await Task.Delay(10);
+                    await Task.Delay(1000);
                 }
             }
         }
@@ -55,7 +55,7 @@ namespace Edge_tts_sharp.Utils
 
                 while (waveOut.PlaybackState == PlaybackState.Playing)
                 {
-                    await Task.Delay(10);
+                    await Task.Delay(1000);
                 }
             }
         }
