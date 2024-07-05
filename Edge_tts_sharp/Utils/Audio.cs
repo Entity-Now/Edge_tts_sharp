@@ -15,23 +15,16 @@ namespace Edge_tts_sharp.Utils
     {
         public static async Task PlayToStreamAsync(Stream source, float volume = 1.0f)
         {
-            var bufferedWaveProvider = new BufferedWaveProvider(new WaveFormat());
-            using (var waveOut = new WaveOutEvent())
+            using (var sr = new StreamMediaFoundationReader(source))
+            using (var directSoundOut = new DirectSoundOut())
             {
-                waveOut.Init(bufferedWaveProvider);
-                waveOut.Volume = volume;
-                waveOut.Play();
+                directSoundOut.Init(sr);
+                directSoundOut.Volume = volume;
+                directSoundOut.Play();
 
-                byte[] buffer = new byte[4096];
-                int bytesRead;
-                while ((bytesRead = await source.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                while (directSoundOut.PlaybackState == PlaybackState.Playing)
                 {
-                    bufferedWaveProvider.AddSamples(buffer, 0, bytesRead);
-                }
-
-                while (waveOut.PlaybackState == PlaybackState.Playing)
-                {
-                    await Task.Delay(1000);
+                    Thread.Sleep(10);
                 }
             }
         }
@@ -40,6 +33,7 @@ namespace Edge_tts_sharp.Utils
         {
             using (var ms = new MemoryStream(source))
             {
+                ms.Position = 0;
                 await PlayToStreamAsync(ms, volume);
             }
         }
@@ -47,15 +41,15 @@ namespace Edge_tts_sharp.Utils
         public static async Task PlayAudioAsync(string audioPath, float volume = 1.0f)
         {
             using (var audioFile = new AudioFileReader(audioPath))
-            using (var waveOut = new WaveOutEvent())
+            using (var directSoundOut = new DirectSoundOut())
             {
-                waveOut.Init(audioFile);
-                waveOut.Volume = volume;
-                waveOut.Play();
+                directSoundOut.Init(audioFile);
+                directSoundOut.Volume = volume;
+                directSoundOut.Play();
 
-                while (waveOut.PlaybackState == PlaybackState.Playing)
+                while (directSoundOut.PlaybackState == PlaybackState.Playing)
                 {
-                    await Task.Delay(1000);
+                    await Task.Delay(500);
                 }
             }
         }
@@ -63,81 +57,18 @@ namespace Edge_tts_sharp.Utils
         public static async Task PlayAudioFromUrlAsync(string url, float volume = 1.0f)
         {
             using (HttpClient client = new HttpClient())
-            using (Stream stream = await client.GetStreamAsync(url))
             {
-                await PlayToStreamAsync(stream, volume);
-            }
-        }
-
-        public static async Task PlayNetworkAudio(this HttpClient client, string url, float volume = 1.0f)
-        {
-            try
-            {
-                using (var responseStream = await client.GetStreamAsync(url))
+                using (var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
                 {
-                    var bufferedWaveProvider = new BufferedWaveProvider(new WaveFormat());
-                    using (var waveOut = new WaveOutEvent())
-                    {
-                        waveOut.Init(bufferedWaveProvider);
-                        waveOut.Volume = volume;
-                        waveOut.Play();
-
-                        byte[] buffer = new byte[4096];
-                        int bytesRead;
-                        while ((bytesRead = await responseStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
-                        {
-                            bufferedWaveProvider.AddSamples(buffer, 0, bytesRead);
-                            // 调整这个延迟时间以确保缓冲区有足够的数据播放
-                            await Task.Delay(10);
-                        }
-
-                        // 等待播放完成
-                        while (waveOut.PlaybackState == PlaybackState.Playing && bufferedWaveProvider.BufferedDuration.TotalMilliseconds > 0)
-                        {
-                            await Task.Delay(50);
-                        }
-                    }
+                    var stream = await response.Content.ReadAsByteArrayAsync();
+                    await PlayToByteAsync(stream, volume);
+                    
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error playing network audio: {ex.Message}");
-            }
-        }
-        public static async Task PlayNetworkAudio(this HttpClient client, string url, float volume = 1.0f, int bufferSize = 4096, int delay = 10, Action callBack = null)
-        {
-            try
-            {
-                using (var responseStream = await client.GetStreamAsync(url))
-                {
-                    var bufferedWaveProvider = new BufferedWaveProvider(new WaveFormat());
-                    using (var waveOut = new WaveOutEvent())
-                    {
-                        waveOut.Init(bufferedWaveProvider);
-                        waveOut.Volume = volume;
-                        waveOut.Play();
-
-                        byte[] buffer = new byte[bufferSize];
-                        int bytesRead;
-                        while ((bytesRead = await responseStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
-                        {
-                            bufferedWaveProvider.AddSamples(buffer, 0, bytesRead);
-                            await Task.Delay(delay);
-                        }
-
-                        waveOut.PlaybackStopped += (s, e) =>
-                        {
-                            // 处理播放停止的情况
-                            callBack();
-                        };
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error playing network audio: {ex.Message}");
-            }
         }
 
+
+
+        
     }
 }
