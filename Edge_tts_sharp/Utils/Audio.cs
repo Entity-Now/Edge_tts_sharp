@@ -24,7 +24,7 @@ namespace Edge_tts_sharp.Utils
 
                 while (directSoundOut.PlaybackState == PlaybackState.Playing)
                 {
-                    Thread.Sleep(10);
+                    Thread.Sleep(1000);
                 }
             }
         }
@@ -49,7 +49,7 @@ namespace Edge_tts_sharp.Utils
 
                 while (directSoundOut.PlaybackState == PlaybackState.Playing)
                 {
-                    await Task.Delay(500);
+                    await Task.Delay(1000);
                 }
             }
         }
