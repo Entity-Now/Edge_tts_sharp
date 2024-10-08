@@ -5,7 +5,7 @@
 
 	  <!--以下是我们自己添加的-->
 	  <!--版本号，重要性不必多说-->
-	  <Version>1.1.1</Version>
+	  <Version>1.1.2</Version>
 	  <!--添加该配置，在编译时进行打包-->
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	  <!--添加该配置才会生成注释文件，默认无注释-->

@@ -22,32 +22,41 @@ namespace Edge_tts_sharp
         public string wssAddress { get; set; }
         public Wss(string url)
         {
-            wssAddress = url;
-            wss = new WebSocket(wssAddress);
-            var sslProtocolHack = (System.Security.Authentication.SslProtocols)(SslProtocolsHack.Tls12 | SslProtocolsHack.Tls11 | SslProtocolsHack.Tls);
-            wss.SslConfiguration.EnabledSslProtocols = sslProtocolHack;
-            if (url.Contains("wss://"))
+            try
             {
-                wss.SslConfiguration.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+                wssAddress = url;
+                wss = new WebSocket(wssAddress);
+                var sslProtocolHack = (System.Security.Authentication.SslProtocols)(SslProtocolsHack.Tls12 | SslProtocolsHack.Tls11 | SslProtocolsHack.Tls);
+                wss.SslConfiguration.EnabledSslProtocols = sslProtocolHack;
+                if (url.Contains("wss://"))
+                {
+                    wss.SslConfiguration.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+                }
+                wss.OnOpen += (sender, e) => {
+                    OnLog(new Log { level = level.info, msg = "WebSocket Open" });
+                };
+                wss.OnMessage += (sender, e) => OnMessage(sender, e);
+                wss.OnClose += (sender, e) =>
+                {
+                    //TlsHandshakeFailure
+                    if (e.Code == 1015 && wss.SslConfiguration.EnabledSslProtocols != sslProtocolHack)
+                    {
+                        OnLog(new Log { level = level.error, msg = "ssl握手失败，正在尝试重新连接." });
+                        wss.SslConfiguration.EnabledSslProtocols = sslProtocolHack;
+                        wss.Connect();
+                    }
+                    else
+                    {
+                        OnColse(sender, e);
+                    }
+                };
+
             }
-            wss.OnOpen += (sender, e) => {
-                OnLog(new Log { level = level.info, msg = "WebSocket Open" });
-            };
-            wss.OnMessage += (sender, e)=> OnMessage(sender, e);
-            wss.OnClose += (sender, e) =>
+            catch (Exception e)
             {
-                //TlsHandshakeFailure
-                if (e.Code == 1015 && wss.SslConfiguration.EnabledSslProtocols != sslProtocolHack)
-                {
-                    OnLog(new Log { level = level.error, msg = "ssl握手失败，正在尝试重新连接." });
-                    wss.SslConfiguration.EnabledSslProtocols = sslProtocolHack;
-                    wss.Connect();
-                }
-                else
-                {
-                    OnColse(sender, e);
-                }
-            };
+                OnLog(new Log { level = level.error, msg = $"WebSocket Exception:{e}" });
+                throw e;
+            }
         }
         public bool Run()
         {

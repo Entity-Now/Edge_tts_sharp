@@ -5,13 +5,41 @@
 ```sh
 NuGet\Install-Package Edge_tts_sharp
 ```
+## 方法
+
+### 全局对象
+| 参数 | 说明 |
+| --- | --- |
+| Edge_tts.Debug | 调试模式，为true则显示日志 |
+| Edge_tts.Await | 同步模式，为true会等待函数执行完毕 | 
+
+### Invoke/PlayText/SaveAudio方法
+| 参数 | 说明 |
+| --- | --- |
+| PlayOption | 参数配置 |
+| eVoice | 音源 |
+| Action<List<callback>> | 回调函数，参数是一个binary数组 |
+
+### PlayOption对象
+| 名称  | 说明 |
+| --- | --- |
+| Text | 播放的文本 |
+| Rate | 播放速度，是一个-100至+100的数值 |
+| Volume | 音量，是一个0-1的浮点数值 |
+| SavePath | 音频保存路径，为空不保存 |
+
 ## 获取一个Player对象
 > **PlayerAudio**对象，支持对音频进行简单的控制，例如：开始、暂停、继续播放、停止播放等。
 ```cs
 // 获取一个PlayerAudio对象
 static void getPlayer(string msg, eVoice voice)
 {
-    var player = Edge_tts.GetPlayer(msg, voice);
+    PlayOption option = new PlayOption
+    {
+        Rate = 0,
+        Text = msg,
+    };
+    var player = Edge_tts.GetPlayer(option, voice);
 
     Console.WriteLine("开始播放");
     player.PlayAsync();
@@ -33,25 +61,17 @@ static void getPlayer(string msg, eVoice voice)
 
 ## 文字转语言
 ```cs
-# 文本转语音
+// 文本转语音
 static void TextToAudio()
 {
+    PlayOption option = new PlayOption
+    {
+        Rate = 0,
+        Text = "Hello EdgeTTs",
+    };
     var voice = Edge_tts.GetVoice().First();
-    Edge_tts.PlayText("hello Edge~", voice);
+    Edge_tts.PlayText(option, voice);
 }
-```
-
-## 设置语速和音量
-| 属性 | 说明 |
-| --- | --- |
-| msg | 文本 |
-| voice | voice对象 | 
-| rate | （可选）调整语速，是一个-100 - 100的数值 |
-| volume | （可选）调整音量，是一个0 - 1的数值 |
-```cs
-# 文字转语音，并且设置语速
-var voice = Edge_tts.GetVoice().First();
-Edge_tts.PlayText("hello Edge~", voice， -25， 0.5f);
 ```
 
 ## 保存到本地
@@ -59,18 +79,29 @@ Edge_tts.PlayText("hello Edge~", voice， -25， 0.5f);
 // 保存音频
 static void SaveAudio()
 {
+    PlayOption option = new PlayOption
+    {
+        Rate = 0,
+        Text = "Hello EdgeTTs",
+        SavePath = "C:\\audio"
+    };
     // 获取xiaoxiao语音包
     var voice = Edge_tts.GetVoice().FirstOrDefault(i => i.Name == "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)");
-    Edge_tts.SaveAudio("hello Edge~", voice, 0, "C:\\audio");
+    Edge_tts.SaveAudio(option, voice);
 }
 ```
 
 ## 自定义操作
 ```cs
-// 回调函数的第一个参数是binary数据
+// 自定义接口使用
 static void MyFunc(string msg, eVoice voice)
 {
-    Edge_tts.Invoke(msg, voice, 0, libaray =>
+    PlayOption option = new PlayOption
+    {
+        Rate = 0,
+        Text = msg,
+    };
+    Edge_tts.Invoke(option, voice, libaray =>
     {
         // 写入自己的操作
         // ...
