@@ -14,30 +14,28 @@ namespace Edge_tts_sharp.Utils
 {
     public static class Audio
     {
-        public static async Task PlayToStreamAsync(Stream source, float volume = 1.0f, float speed = 0.0f, CancellationToken cancellationToken = default)
+        public static async Task PlayToStreamAsync(Stream source, float volume = 1f, float speed = 0f, CancellationToken cancellationToken = default(CancellationToken))
         {
-            using (var sr = new StreamMediaFoundationReader(source))
-            {
-                var sampleProvider = sr.ToSampleProvider();
-                var pitchShiftingProvider = new SmbPitchShiftingSampleProvider(sampleProvider);
-                using (var directSoundOut = new DirectSoundOut())
-                {
-                    pitchShiftingProvider.PitchFactor = (float)Math.Pow(2.0, speed / 100.0);
-                    var waveProvider = pitchShiftingProvider.ToWaveProvider();
-                    directSoundOut.Init(waveProvider);
-                    directSoundOut.Volume = volume;
-                    directSoundOut.Play();
+            StreamMediaFoundationReader sr = new StreamMediaFoundationReader(source);
+            SmbPitchShiftingSampleProvider smbPitchShiftingSampleProvider = new SmbPitchShiftingSampleProvider(sr.ToSampleProvider());
+            smbPitchShiftingSampleProvider.PitchFactor = (float)Math.Pow(2.0, (double)speed / 100.0);
 
-                    while (directSoundOut.PlaybackState == PlaybackState.Playing)
-                    {
-                        if (cancellationToken.IsCancellationRequested)
-                        {
-                            directSoundOut.Stop();
-                            break;
-                        }
-                        await Task.Delay(1000, cancellationToken);
-                    }
+            VolumeSampleProvider volumeProvider = new VolumeSampleProvider(smbPitchShiftingSampleProvider);
+            volumeProvider.Volume = volume;
+
+            DirectSoundOut directSoundOut = new DirectSoundOut();
+            directSoundOut.Init(volumeProvider.ToWaveProvider());
+            directSoundOut.Play();
+
+            while (directSoundOut.PlaybackState == PlaybackState.Playing)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    directSoundOut.Stop();
+                    break;
                 }
+
+                await Task.Delay(1000, cancellationToken);
             }
         }
 
