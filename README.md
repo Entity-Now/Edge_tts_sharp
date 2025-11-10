@@ -295,3 +295,5 @@ Edge_tts_sharp/
 ## 联系方式
 
 如有任何问题或建议，请通过[GitHub Issues](https://github.com/Entity-Now/Edge_tts_sharp/issues)联系我们。
+
+友情链接 [莫欺客鞋帽优选](https://www.moqistar.com)
