@@ -1,6 +1,6 @@
 # Edge_tts_sharp
 
-[Edge_tts_sharp](https://www.nuget.org/packages/Edge_tts_sharp) 是一个免费的C#库（版本1.1.5），调用Microsoft Edge Text to Speech接口生成高质量的语音音频。
+[Edge_tts_sharp](https://www.nuget.org/packages/Edge_tts_sharp) 是一个免费的C#库（版本1.1.6），调用Microsoft Edge Text to Speech接口生成高质量的语音音频。
 
 ## 项目特点
 
@@ -275,6 +275,7 @@ Edge_tts_sharp/
 
 ## 更新历史
 
+- 2026.1.6 - 修复无法播放的问题，将WebSocket—Sharp改为ClientWebSocket
 - 2023.10.28 - 首次发布
 - 2023.10.30 - 更新调用接口方式
 
