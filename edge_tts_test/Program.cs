@@ -5,20 +5,23 @@ using Edge_tts_sharp.Utils;
 using System.Web;
 
 Edge_tts.Await = true;
+Edge_tts.Debug = true;
 PlayOption option = new PlayOption
 {
     Rate = 1,
     Text = ""
 };
-string msg = string.Empty;
-Console.WriteLine("请输入文本内容.");
-option.Text = Console.ReadLine();
-// 获取xiaoxiao语音包
-var voice = Edge_tts.GetVoice().FirstOrDefault(i=> i.Name == "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)");
-// 文字转语音，并且设置语速
-Edge_tts.PlayText(option, voice);
-Console.WriteLine("自动输出");
-Console.ReadLine();
+while (true)
+{
+    string msg = string.Empty;
+    Console.WriteLine("请输入文本内容.");
+    option.Text = Console.ReadLine();
+    // 获取xiaoxiao语音包
+    var voice = Edge_tts.GetVoice().FirstOrDefault(i => i.Name == "Microsoft Server Speech Text to Speech Voice (zh-CN, XiaoxiaoNeural)");
+    // 文字转语音，并且设置语速
+    Edge_tts.PlayText(option, voice);
+    Console.ReadLine();
+}
 
 
 // 保存音频
@@ -57,7 +60,7 @@ static void MyFunc(string msg, eVoice voice)
     {
         // 写入自己的操作
         // ...
-    } );
+    });
 }
 // 获取一个PlayerAudio对象
 static void getPlayer(string msg, eVoice voice)

@@ -29,7 +29,6 @@
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.0.0" />
     <PackageReference Include="System.Text.Json" Version="4.6.0" />
-    <PackageReference Include="WebSocketSharp" Version="1.0.3-rc11" />
   </ItemGroup>
 
   <ItemGroup>
