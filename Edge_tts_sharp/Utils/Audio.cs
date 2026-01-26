@@ -14,6 +14,11 @@ namespace Edge_tts_sharp.Utils
 {
     public static class Audio
     {
+
+        // 夹紧到 [min, max]
+        public static float Clamp(float value, float min, float max)
+            => Math.Max(min, Math.Min(max, value));
+
         public static async Task PlayToStreamAsync(Stream source, float volume = 1f, float speed = 0f, CancellationToken cancellationToken = default(CancellationToken))
         {
             StreamMediaFoundationReader sr = new StreamMediaFoundationReader(source);
@@ -21,7 +26,7 @@ namespace Edge_tts_sharp.Utils
             smbPitchShiftingSampleProvider.PitchFactor = (float)Math.Pow(2.0, (double)speed / 100.0);
 
             VolumeSampleProvider volumeProvider = new VolumeSampleProvider(smbPitchShiftingSampleProvider);
-            volumeProvider.Volume = volume;
+            volumeProvider.Volume = Clamp(volume, 0f, 1f);
 
             DirectSoundOut directSoundOut = new DirectSoundOut();
             directSoundOut.Init(volumeProvider.ToWaveProvider());
